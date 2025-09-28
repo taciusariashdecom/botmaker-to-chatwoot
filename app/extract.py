@@ -4,11 +4,12 @@ import argparse
 import logging
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 from typing import Dict, List, Optional
 
 from .botmaker import BotmakerClient, stream_chats, stream_messages
 from .checkpoints import CheckpointStore
-from .config import get_settings
+from .config import Settings, get_settings
 from .logging_setup import setup_logging
 from .storage import make_storage
 
@@ -65,6 +66,88 @@ def build_contact_record(chat_dict: Dict) -> Dict:
         "exported_to_chatwoot": False,
         "exported_at": None,
     }
+
+
+def run_sample_extract(
+    *,
+    settings: Optional[Settings] = None,
+    max_chats: int = 1,
+    messages_per_chat: Optional[int] = 1,
+    skip_messages: bool = False,
+    long_term: bool = False,
+) -> Dict[str, object]:
+    """Execute uma extração em memória limitada para uso em testes/web."""
+
+    resolved_settings = settings or get_settings()
+    args_like = SimpleNamespace(from_iso=None, to_iso=None)
+    from_iso, to_iso = default_window(resolved_settings, args_like)
+
+    client = BotmakerClient(
+        resolved_settings.botmaker_base_url,
+        resolved_settings.botmaker_api_token,
+        resolved_settings.rate_limit_rps,
+    )
+
+    contacts: Dict[str, Dict] = {}
+    chats_output: List[Dict] = []
+    messages_output: List[Dict] = []
+
+    try:
+        for chat in stream_chats(
+            client,
+            from_iso=from_iso,
+            to_iso=to_iso,
+            limit=max_chats,
+        ):
+            chat_dict = asdict(chat)
+            chats_output.append(chat_dict)
+
+            contact_id = chat_dict.get("contact_id")
+            if contact_id and contact_id not in contacts:
+                contacts[contact_id] = build_contact_record(chat_dict)
+
+            if skip_messages:
+                continue
+
+            fetched = 0
+            for message in stream_messages(
+                client,
+                chat_id=chat.chat_id,
+                channel_id=chat.channel_id,
+                contact_id=chat.contact_id,
+                long_term_search=long_term,
+            ):
+                msg_dict = asdict(message)
+                messages_output.append(msg_dict)
+                fetched += 1
+                if messages_per_chat and fetched >= messages_per_chat:
+                    break
+
+        summary = {
+            "type": "extract_sample",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "window": {"from": from_iso, "to": to_iso},
+            "limits": {
+                "max_chats": max_chats,
+                "messages_per_chat": messages_per_chat,
+                "skip_messages": skip_messages,
+                "long_term_search": long_term,
+            },
+            "counts": {
+                "contacts": len(contacts),
+                "chats": len(chats_output),
+                "messages": len(messages_output),
+            },
+        }
+
+        return {
+            "summary": summary,
+            "contacts": list(contacts.values()),
+            "chats": chats_output,
+            "messages": messages_output,
+        }
+    finally:
+        client.close()
 
 
 def main() -> None:

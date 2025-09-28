@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  extractor:
+    build: .
+    image: botmaker-to-chatwoot:latest
+    container_name: b2c-extractor
+    command: ["bash", "-lc", "python -m app.extract"]
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./mappings:/app/mappings
+    restart: "no"
+
+  loader:
+    build: .
+    image: botmaker-to-chatwoot:latest
+    container_name: b2c-loader
+    command: ["bash", "-lc", "python -m app.load"]
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./mappings:/app/mappings
+    restart: "no"

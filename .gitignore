@@ -1,0 +1,18 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Data & logs
+/data/
+/logs/
+/mappings/
+
+# OS
+.DS_Store

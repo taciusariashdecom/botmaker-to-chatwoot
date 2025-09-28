@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-import json
 import logging
 import sys
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Dict
+
+import json
+from datetime import date, datetime
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -18,6 +20,14 @@ from app.logging_setup import setup_logging
 logger = logging.getLogger(__name__)
 
 
+def _json_default(value: Any) -> Any:
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    if isinstance(value, set):
+        return list(value)
+    return str(value)
+
+
 def _json_response(status: int, payload: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "statusCode": status,
@@ -26,7 +36,7 @@ def _json_response(status: int, payload: Dict[str, Any]) -> Dict[str, Any]:
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
         },
-        "body": json.dumps(payload),
+        "body": json.dumps(payload, default=_json_default, ensure_ascii=False),
     }
 
 
@@ -50,13 +60,14 @@ def handler(event, context):  # noqa: D401 (Netlify signature)
             },
         )
 
-    setup_logging(settings.log_dir)
+    resolved_log_dir = setup_logging(settings.log_dir)
+    logger.info("Test run logging directory: %s", resolved_log_dir)
 
     try:
         result = run_sample_extract(
             settings=settings,
-            max_chats=1,
-            messages_per_chat=1,
+            max_chats=10,
+            messages_per_chat=100,
             skip_messages=False,
             long_term=False,
         )

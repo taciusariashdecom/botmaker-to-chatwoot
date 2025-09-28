@@ -115,6 +115,7 @@ def run_sample_extract(
                 chat_id=chat.chat_id,
                 channel_id=chat.channel_id,
                 contact_id=chat.contact_id,
+                limit=messages_per_chat,
                 long_term_search=long_term,
             ):
                 msg_dict = asdict(message)

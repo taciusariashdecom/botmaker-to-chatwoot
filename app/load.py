@@ -323,6 +323,21 @@ def main() -> None:
                 "timestamp": iso_now(),
             },
         )
+        # Write loader summary for web frontend
+        storage.write_json(
+            f"{input_prefix}/load_summary.json",
+            {
+                "type": "load",
+                "timestamp": iso_now(),
+                "prefix": input_prefix,
+                "counts": {
+                    "contacts_updated": len(contacts_updated),
+                    "chats_updated": len(chats_updated),
+                    "messages_updated": len(messages_updated),
+                },
+                "dry_run": args.dry_run,
+            },
+        )
 
     finally:
         client.close()

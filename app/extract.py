@@ -148,6 +148,24 @@ def main() -> None:
             }
         )
         checkpoints.set("last_extract", export_meta)
+        # Write extraction summary for web frontend
+        summary = {
+            "type": "extract",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "prefix": prefix,
+            "window": {"from": from_iso, "to": to_iso},
+            "counts": {
+                "contacts": len(contacts),
+                "chats": len(chats_output),
+                "messages": len(messages_output),
+            },
+            "files": {
+                "contacts": "contacts.ndjson",
+                "chats": "chats.ndjson",
+                "messages": "messages.ndjson",
+            },
+        }
+        storage.write_json(f"{prefix}/summary.json", summary)
         logger.info(
             "Extraction finished",
             extra={

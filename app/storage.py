@@ -60,6 +60,23 @@ class LocalStorage:
                 continue
             yield os.path.join(dir_path, entry)
 
+    # JSON helpers (used by web frontend summaries)
+    def write_json(self, rel_path: str, obj: Dict[str, Any]) -> None:
+        path = self._path(rel_path)
+        tmp = f"{path}.tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(obj, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, path)
+        logger.info("Wrote %s", path)
+
+    def read_json(self, rel_path: str) -> Dict[str, Any]:
+        path = self._path(rel_path)
+        if not os.path.exists(path):
+            logger.warning("JSON not found: %s", path)
+            return {}
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
 
 def make_storage(backend: str, data_dir: str) -> LocalStorage:
     if backend == "local":

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Botmaker → Chatwoot | Status de Migração</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Botmaker → Chatwoot</h1>
+    <p>Status de Migração</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Carregar dados</h2>
+      <div class="load-options">
+        <div>
+          <label for="prefix">Prefixo (p/ servidor local):</label>
+          <input id="prefix" type="text" placeholder="ex: botmaker/run-20250928T180000Z" />
+          <button id="btnLoadPrefix">Carregar</button>
+          <p class="hint">Execute um servidor local na raiz do projeto e abra: <code>/web/index.html?prefix=botmaker/run-…</code></p>
+        </div>
+        <div class="divider">ou</div>
+        <div>
+          <label>Carregar arquivos localmente (funciona no Netlify também)</label>
+          <div class="file-grid">
+            <div>
+              <span>Resumo (summary.json ou load_summary.json)</span>
+              <input type="file" id="fileSummary" accept="application/json" />
+            </div>
+            <div>
+              <span>Contatos (contacts_export_status.ndjson)</span>
+              <input type="file" id="fileContacts" accept=".ndjson,.jsonl,application/octet-stream" />
+            </div>
+            <div>
+              <span>Conversas (chats_export_status.ndjson)</span>
+              <input type="file" id="fileChats" accept=".ndjson,.jsonl,application/octet-stream" />
+            </div>
+            <div>
+              <span>Mensagens (messages_export_status.ndjson)</span>
+              <input type="file" id="fileMessages" accept=".ndjson,.jsonl,application/octet-stream" />
+            </div>
+          </div>
+          <button id="btnLoadFiles">Exibir</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="summaryCard" hidden>
+      <h2>Resumo</h2>
+      <div id="summary"></div>
+    </section>
+
+    <section class="card" id="statsCard" hidden>
+      <h2>Métricas</h2>
+      <ul id="metrics"></ul>
+    </section>
+
+    <section class="card" id="samplesCard" hidden>
+      <h2>Amostras</h2>
+      <div class="samples">
+        <div>
+          <h3>Contatos</h3>
+          <pre id="sampleContacts"></pre>
+        </div>
+        <div>
+          <h3>Conversas</h3>
+          <pre id="sampleChats"></pre>
+        </div>
+        <div>
+          <h3>Mensagens</h3>
+          <pre id="sampleMessages"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>© Status de Migração • Local & Netlify</small>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

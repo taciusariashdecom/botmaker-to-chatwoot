@@ -1,6 +1,12 @@
 [build]
   publish = "web"
 
+[functions]
+  directory = "netlify/functions"
+
+[functions."test_run"]
+  included_files = ["app/**"]
+
 # Optional: security headers
 [[headers]]
   for = "/*"

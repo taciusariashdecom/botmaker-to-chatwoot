@@ -46,6 +46,16 @@
           <button id="btnLoadFiles">Exibir</button>
         </div>
       </div>
+      <div class="test-run">
+        <div>
+          <h3>Teste rápido</h3>
+          <p>Executa a função serverless e busca 1 contato, 1 conversa e 1 mensagem diretamente do Botmaker.</p>
+        </div>
+        <div class="test-run-actions">
+          <button id="btnTestRun">Fazer teste</button>
+          <span id="testStatus" class="status-text" aria-live="polite"></span>
+        </div>
+      </div>
     </section>
 
     <section class="card" id="summaryCard" hidden>
@@ -56,6 +66,27 @@
     <section class="card" id="statsCard" hidden>
       <h2>Métricas</h2>
       <ul id="metrics"></ul>
+    </section>
+
+    <section class="card" id="dataTableCard" hidden>
+      <div class="card-header">
+        <div>
+          <h2>Visualização detalhada</h2>
+          <p class="subtle">Tabela estilo Supabase com todos os campos carregados para inspeção em tempo real.</p>
+        </div>
+        <div class="dataset-toggle" role="group" aria-label="Selecionar coleção">
+          <button type="button" data-dataset="contacts" class="active">Contatos (0)</button>
+          <button type="button" data-dataset="chats">Conversas (0)</button>
+          <button type="button" data-dataset="messages">Mensagens (0)</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table id="dataTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+        <div id="tableEmptyState" class="empty-state" hidden>Carregue dados para visualizar os campos aqui.</div>
+      </div>
     </section>
 
     <section class="card" id="samplesCard" hidden>
@@ -74,6 +105,29 @@
           <pre id="sampleMessages"></pre>
         </div>
       </div>
+    </section>
+
+    <section class="card" id="debugCard">
+      <details id="debugAccordion">
+        <summary>Debug &amp; Logs</summary>
+        <div class="debug-grid">
+          <div class="error-guide">
+            <h3>Erros mapeados</h3>
+            <ul>
+              <li><strong>Credenciais ausentes:</strong> defina <code>BOTMAKER_API_TOKEN</code> (e URL customizada se necessário) nas variáveis do Netlify.</li>
+              <li><strong>401 Unauthorized:</strong> o token não possui permissão para acessar <code>/chats</code> ou <code>/messages</code>; confirme com o suporte Botmaker.</li>
+              <li><strong>403 Business mismatch:</strong> valide se o token está vinculado ao mesmo <em>Business ID</em> configurado neste projeto.</li>
+              <li><strong>429 Rate limit:</strong> reduza <code>RATE_LIMIT_RPS</code> ou tente novamente após alguns segundos.</li>
+              <li><strong>Timeout ou rede:</strong> cheque conectividade da função serverless e endpoints externos.</li>
+            </ul>
+            <p class="hint">Cole os logs abaixo ao reportar um problema.</p>
+          </div>
+          <div class="log-panel">
+            <h3>Logs da sessão</h3>
+            <pre id="logOutput" aria-live="polite"></pre>
+          </div>
+        </div>
+      </details>
     </section>
   </main>
 

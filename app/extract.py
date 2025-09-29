@@ -98,6 +98,7 @@ def run_sample_extract(
             from_iso=from_iso,
             to_iso=to_iso,
             limit=max_chats,
+            long_term_search=long_term,
         ):
             chat_dict = asdict(chat)
             chats_output.append(chat_dict)
@@ -112,6 +113,8 @@ def run_sample_extract(
             fetched = 0
             for message in stream_messages(
                 client,
+                from_iso=from_iso,
+                to_iso=to_iso,
                 chat_id=chat.chat_id,
                 channel_id=chat.channel_id,
                 contact_id=chat.contact_id,
@@ -192,6 +195,7 @@ def main() -> None:
             from_iso=from_iso,
             to_iso=to_iso,
             limit=args.max_chats,
+            long_term_search=args.long_term,
         ):
             chat_dict = asdict(chat)
             chats_output.append(chat_dict)
@@ -207,6 +211,8 @@ def main() -> None:
             count = 0
             for message in stream_messages(
                 client,
+                from_iso=from_iso,
+                to_iso=to_iso,
                 chat_id=chat.chat_id,
                 channel_id=chat.channel_id,
                 contact_id=chat.contact_id,

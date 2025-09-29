@@ -27,6 +27,7 @@ class BotmakerClient:
         channel_id: Optional[str] = None,
         queue_id: Optional[str] = None,
         has_agent: Optional[bool] = None,
+        long_term_search: bool = False,
         next_page: Optional[str] = None,
     ) -> Dict[str, Any]:
         params: Dict[str, Any] = {}
@@ -42,9 +43,14 @@ class BotmakerClient:
             params["queue-id"] = queue_id
         if has_agent is not None:
             params["has-agent"] = str(has_agent).lower()
+        if long_term_search:
+            params["long-term-search"] = str(long_term_search).lower()
 
         url = next_page or "/chats"
         resp = self.http.request("GET", url, params=params if next_page is None else None)
+        # Handle empty results (HTTP 204) gracefully
+        if resp.status_code == 204 or not resp.content:
+            return {"items": [], "nextPage": None}
         resp.raise_for_status()
         data = resp.json()
         if not isinstance(data, dict):
@@ -81,6 +87,9 @@ class BotmakerClient:
 
         url = next_page or "/messages"
         resp = self.http.request("GET", url, params=params if next_page is None else None)
+        # Handle empty results (HTTP 204) gracefully
+        if resp.status_code == 204 or not resp.content:
+            return {"items": [], "nextPage": None}
         resp.raise_for_status()
         data = resp.json()
         if not isinstance(data, dict):
@@ -97,6 +106,7 @@ def stream_chats(
     channel_id: Optional[str] = None,
     queue_id: Optional[str] = None,
     has_agent: Optional[bool] = None,
+    long_term_search: bool = False,
 ) -> Iterator[BotmakerChat]:
     next_page: Optional[str] = None
     total = 0
@@ -108,6 +118,7 @@ def stream_chats(
             channel_id=channel_id,
             queue_id=queue_id,
             has_agent=has_agent,
+            long_term_search=long_term_search,
             next_page=next_page,
         )
         items = page.get("items", [])

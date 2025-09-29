@@ -53,7 +53,7 @@ class HttpClient:
 
 def make_botmaker_client(base_url: str, token: str, rps: float) -> HttpClient:
     headers = {
-        "Authorization": f"Bearer {token}",
+        "access-token": token,
         "Content-Type": "application/json",
         "Accept": "application/json",
     }

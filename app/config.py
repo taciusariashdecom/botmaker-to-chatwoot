@@ -20,9 +20,9 @@ class Settings:
 
     # Storage
     storage_backend: str = os.getenv("STORAGE_BACKEND", "local")  # local | supabase
-    data_dir: str = os.getenv("DATA_DIR", "/app/data")
-    log_dir: str = os.getenv("LOG_DIR", "/app/logs")
-    mappings_dir: str = os.getenv("MAPPINGS_DIR", "/app/mappings")
+    data_dir: str = os.getenv("DATA_DIR", "./data")
+    log_dir: str = os.getenv("LOG_DIR", "./logs")
+    mappings_dir: str = os.getenv("MAPPINGS_DIR", "./mappings")
 
     # Supabase (optional)
     supabase_url: str = os.getenv("SUPABASE_URL", "")
